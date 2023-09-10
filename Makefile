@@ -15,6 +15,7 @@ add_includes = -I$(INCLUDE)
 
 # find the CXX libraries
 CXXLIBS += $(shell root-config --libs)
+CXXLIBS += -lMinuit2
 
 # decide the compile
 CXX = g++

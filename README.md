@@ -46,7 +46,6 @@ Keep the same criteria and procedure as the IBD analysis.
 1. Gain the fast neutron spectrum from the OWS-tag events.
 2. Gain the IBD-extend spectrum in high energy range.
 3. Normalize the fast neutron spectrum using the IBD-extend spectrum, and get the number of the fast neutron background in IBD candidates.
-4. Using the function with the form of $N (\frac{E}{E_0})^{-a - \frac{E}{E_0}}$.
-5. Gain the error of the fitting parameters as the statistical uncertainty.
+4. Use the function with the form of $N (\frac{E}{E_0})^{-a - \frac{E}{E_0}}$ to fit the normalized spectrum, and gain the error of the fitting parameters as the statistical uncertainty.
 6. Caculate the difference of the integral of the fitting function and the integral of the events number of the normalization fast neutron in high energy range as the systematic uncertainty.
 7. Get the mean and the error of the fast neutron background events in IBD candidates.
