@@ -10,7 +10,7 @@ void Usage();
 
 int main(int argc, char **argv) {
 
-  if (argc != 3) {
+  if (argc != 4) {
     std::cout << "Wrong input!" << std::endl;
     Usage();
     exit(1);
@@ -18,18 +18,33 @@ int main(int argc, char **argv) {
 
   jinpingStyle();
 
-  TString site = argv[1];
-  int BinWidth = atoi(argv[2]);
+  TString dataset = argv[1];
+  TString site = argv[2];
+  int BinWidth = atoi(argv[3]);
 
   TCanvas *cv = new TCanvas("c", "", 700, 500);
   TLegend *lg = new TLegend();
-  TFile *file_AccSub =
-      new TFile("./data_in/AccSub/" + site + "_tot.root", "read");
+
+  TFile *file_AccSub = nullptr;
+  if (dataset == "P17B") {
+    file_AccSub =
+        new TFile("./data_in/AccSub_P17B/" + site + "_tot.root", "read");
+  } else if (dataset == "Full") {
+    file_AccSub = new TFile("./data_in/AccSub/" + site + "_tot.root", "read");
+  } else {
+    exit(1);
+  }
   TFile *file_Select =
       new TFile("./data_in/Select/" + site + "_tot.root", "read");
 
   h1dAccSub = (TH1D *)file_AccSub->Get("h1dAcc22Sum");
-  h1dSelect = (TH1D *)file_Select->Get("h1dPrompt_0");
+  if (dataset == "P17B") {
+    h1dSelect = (TH1D *)file_Select->Get("h1dPrompt_1");
+  } else if (dataset == "Full") {
+    h1dSelect = (TH1D *)file_Select->Get("h1dPrompt_0");
+  } else {
+    exit(1);
+  }
 
   h1dAccSub->SetName("h1dAccSub");
   h1dSelect->SetName("h1dSelect");
@@ -98,6 +113,6 @@ int main(int argc, char **argv) {
 }
 
 void Usage() {
-  std::cout << "Usage: ./Normalization [site] [BinWidth / MeV]";
+  std::cout << "Usage: ./Normalization [dataset] [site] [BinWidth / MeV]";
   std::cout << std::endl;
 }
