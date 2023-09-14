@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
   func_expo_poly1->SetParameters(50.0 * BinWidth, 100.0, 0.73);
   func_expo_poly1->SetLineColor(kBrownCyan);
   TFitResultPtr fit_res =
-      h1dSelect_norm->Fit("func_expo_poly1", "QS; N0", "", 12.0, 100.0);
+      h1dAccSub->Fit("func_expo_poly1", "QS; N0", "", 12.0, 100.0);
   fit_res->Print();
 
   double Integ_hist =
