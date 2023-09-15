@@ -26,7 +26,7 @@ The details are below:
 
 <font color = red> Need to check: </font>
 
-1. The T2PrevOWSMu < 300 ns cut.
+1. The T2PrevOWSMu < 300 ns cut. <font color = blue> Choose 300 ns as the final cut. </font>
 
 
 ## IBD-extend
@@ -47,5 +47,13 @@ Keep the same criteria and procedure as the IBD analysis.
 2. Gain the IBD-extend spectrum in high energy range.
 3. Normalize the fast neutron spectrum using the IBD-extend spectrum, and get the number of the fast neutron background in IBD candidates.
 4. Use the function with the form of $N (\frac{E}{E_0})^{-a - \frac{E}{E_0}}$ to fit the normalized spectrum, and gain the error of the fitting parameters as the statistical uncertainty.
-6. Caculate the difference of the integral of the fitting function and the integral of the events number of the normalization fast neutron in high energy range as the systematic uncertainty.
-7. Get the mean and the error of the fast neutron background events in IBD candidates.
+5. Caculate the difference of the integral of the fitting function and the integral of the events number of the normalization fast neutron in high energy range as the systematic uncertainty.
+6. Get the mean and the error of the fast neutron background events in IBD candidates.
+
+
+
+# TODO List:
+
+1. Caculate the efficiency of the muon veto and multiplicity selection, and caculate the rate of the FastN background.
+2. Scan the DT cut from 600mm to 1400mm.
+3. Add a physical picture of the FastN and OWS-tag.
