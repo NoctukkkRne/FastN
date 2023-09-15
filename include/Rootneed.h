@@ -3,6 +3,7 @@
 
 #include <TAxis.h>
 #include <TCanvas.h>
+#include <TChain.h>
 #include <TF1.h>
 #include <TFile.h>
 #include <TFitResult.h>

@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     exit(1);
   }
   TFile *file_Select =
-      new TFile("./data_in/Select/" + site + "_tot.root", "read");
+      new TFile("./data_in/Select_Dt_300ns/" + site + "_tot.root", "read");
 
   h1dAccSub = (TH1D *)file_AccSub->Get("h1dAcc22Sum");
   if (dataset == "P17B") {
@@ -104,10 +104,14 @@ int main(int argc, char **argv) {
              TString::Format("_%dMeV.png", BinWidth));
 
   std::ofstream resfile;
-  resfile.open("./data_out/Normalization_" + site + ".txt", std::ios::app);
-  resfile << BinWidth << ":  ";
-  resfile << Integ_hist << "  " << Integ_func << "  "
-          << (Integ_func - Integ_hist) / Integ_hist * 100.0 << "%" << std::endl;
+  resfile.open("./data_out/Normalization_" + site + ".csv", std::ios::app);
+  resfile << BinWidth << ",";
+  resfile << Integ_hist << "," << Integ_func << ","
+          << (Integ_func - Integ_hist) / Integ_hist * 100.0 << "%,";
+  resfile << Integ_func / func_expo_poly1->GetParameter(0) *
+                 func_expo_poly1->GetParError(0)
+          << ",";
+  resfile << std::endl;
 
   return 0;
 }
