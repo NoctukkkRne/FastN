@@ -69,14 +69,6 @@ int main(int argc, char **argv) {
   h1dSelect_norm->SetMarkerColor(kBlue);
   h1dSelect_norm->SetLineColor(kBlue);
 
-  h1dSelect_norm->GetXaxis()->SetTitle("Prompt Energy [MeV]");
-  h1dSelect_norm->GetYaxis()->SetTitle(
-      TString::Format("Events / %dMeV", BinWidth));
-
-  h1dSelect_norm->GetXaxis()->SetRangeUser(0.0, 100.0);
-  h1dSelect_norm->GetYaxis()->SetRangeUser(0.0,
-                                           1.25 * h1dSelect_norm->GetMaximum());
-
   TF1 *func_partial_N0 = new TF1("func_partial_N0", partial_N0, 1.5, 100.0, 3);
   TF1 *func_partial_E0 = new TF1("func_partial_E0", partial_E0, 1.5, 100.0, 3);
   TF1 *func_partial_a = new TF1("func_partial_a", partial_a, 1.5, 100.0, 3);
@@ -117,7 +109,15 @@ int main(int argc, char **argv) {
   lg->SetY1(0.65);
   lg->SetY2(0.85);
 
-  h1dSelect_norm->Draw("");
+  TH1D *h1dVoid = new TH1D("h1dVoid", "", 1000 / (BinWidth * 10), 0.0, 100.0);
+  h1dVoid->GetXaxis()->SetTitle("Prompt Energy [MeV]");
+  h1dVoid->GetYaxis()->SetTitle(TString::Format("Events / %dMeV", BinWidth));
+  h1dVoid->GetXaxis()->SetRangeUser(0.0, 100.0);
+  h1dVoid->GetYaxis()->SetRangeUser(0.0, 1.05 * func_expo_poly1->Eval(1.5));
+
+  h1dVoid->Draw();
+  h1dSelect_norm->Draw("same");
+  h1dAccSub->GetXaxis()->SetRangeUser(12.0, 100.0);
   h1dAccSub->Draw("same");
   func_expo_poly1->Draw("same");
   lg->Draw("same");
