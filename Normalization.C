@@ -4,13 +4,14 @@
 #include "Func.h"
 #include "Global.h"
 #include "Rootneed.h"
+#include "TMath.h"
 #include "jinpingStyle.h"
 
 void Usage();
 
 int main(int argc, char **argv) {
 
-  if (argc != 4) {
+  if (argc != 5) {
     std::cout << "Wrong input!" << std::endl;
     Usage();
     exit(1);
@@ -20,7 +21,8 @@ int main(int argc, char **argv) {
 
   TString dataset = argv[1];
   TString site = argv[2];
-  int BinWidth = atoi(argv[3]);
+  const int BinWidth = atoi(argv[3]);
+  const double syst_uncertainty = atoi(argv[4]) / 100.0;
 
   TCanvas *cv = new TCanvas("c", "", 700, 500);
   TLegend *lg = new TLegend();
@@ -75,18 +77,38 @@ int main(int argc, char **argv) {
   h1dSelect_norm->GetYaxis()->SetRangeUser(0.0,
                                            1.25 * h1dSelect_norm->GetMaximum());
 
-  TF1 *func_expo_poly1 = new TF1("func_expo_poly1", expo_poly1, 0.0, 100.0, 3);
-  func_expo_poly1->SetParNames("N", "E0", "a");
+  TF1 *func_partial_N0 = new TF1("func_partial_N0", partial_N0, 1.5, 100.0, 3);
+  TF1 *func_partial_E0 = new TF1("func_partial_E0", partial_E0, 1.5, 100.0, 3);
+  TF1 *func_partial_a = new TF1("func_partial_a", partial_a, 1.5, 100.0, 3);
+
+  TF1 *func_expo_poly1 = new TF1("func_expo_poly1", expo_poly1, 1.5, 100.0, 3);
+  func_expo_poly1->SetParNames("N0", "E0", "a");
   func_expo_poly1->SetParameters(50.0 * BinWidth, 100.0, 0.73);
   func_expo_poly1->SetLineColor(kBrownCyan);
   TFitResultPtr fit_res =
       h1dAccSub->Fit("func_expo_poly1", "QS; N0", "", 12.0, 100.0);
   fit_res->Print();
 
+  func_partial_N0->SetParameters(func_expo_poly1->GetParameters());
+  func_partial_E0->SetParameters(func_expo_poly1->GetParameters());
+  func_partial_a->SetParameters(func_expo_poly1->GetParameters());
+
   double Integ_hist =
       h1dSelect_norm->Integral(h1dSelect_norm->FindBin(1.5 + 0.01),
                                h1dSelect_norm->FindBin(12.0 - 0.01));
+  double Integ_hist_err = Integ_hist * syst_uncertainty;
   double Integ_func = func_expo_poly1->Integral(1.5, 12.0) / BinWidth;
+  double Integ_func_err = 0.0;
+  Integ_func_err += TMath::Power(func_partial_N0->Integral(1.5, 12.0) /
+                                     BinWidth * func_expo_poly1->GetParError(0),
+                                 2);
+  Integ_func_err += TMath::Power(func_partial_E0->Integral(1.5, 12.0) /
+                                     BinWidth * func_expo_poly1->GetParError(1),
+                                 2);
+  Integ_func_err += TMath::Power(func_partial_a->Integral(1.5, 12.0) /
+                                     BinWidth * func_expo_poly1->GetParError(2),
+                                 2);
+  Integ_func_err = TMath::Sqrt(Integ_func_err);
 
   lg->AddEntry(h1dSelect_norm, "Normalized fast neutron spectrum");
   lg->AddEntry(h1dAccSub, "Extended IBD spectrum");
@@ -105,18 +127,23 @@ int main(int argc, char **argv) {
 
   std::ofstream resfile;
   resfile.open("./data_out/Normalization_" + site + ".csv", std::ios::app);
-  resfile << BinWidth << ",";
-  resfile << Integ_hist << "," << Integ_func << ","
-          << (Integ_func - Integ_hist) / Integ_hist * 100.0 << "%,";
-  resfile << Integ_func / func_expo_poly1->GetParameter(0) *
-                 func_expo_poly1->GetParError(0)
-          << ",";
+  resfile << BinWidth << "MeV, ";
+  resfile << syst_uncertainty * 100.0 << "%, ";
+  resfile << Integ_hist << ", ";
+  resfile << Integ_func << ", ";
+  resfile << (Integ_func - Integ_hist) / Integ_hist * 100.0 << "%, ";
+  resfile << Integ_hist_err << ", ";
+  resfile << Integ_func_err << ", ";
+  resfile << TMath::Sqrt(TMath::Power(Integ_func_err, 2) +
+                         TMath::Power(Integ_hist_err, 2))
+          << ", ";
   resfile << std::endl;
 
   return 0;
 }
 
 void Usage() {
-  std::cout << "Usage: ./Normalization [dataset] [site] [BinWidth / MeV]";
+  std::cout << "Usage: ./Normalization [dataset] [site] [BinWidth / MeV] "
+               "[Uncertainty / %]";
   std::cout << std::endl;
 }

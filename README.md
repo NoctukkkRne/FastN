@@ -46,7 +46,7 @@ Keep the same criteria and procedure as the IBD analysis.
 1. Gain the fast neutron spectrum from the OWS-tag events.
 2. Gain the IBD-extend spectrum in high energy range.
 3. Normalize the fast neutron spectrum using the IBD-extend spectrum, and get the number of the fast neutron background in IBD candidates.
-4. Use the function with the form of $N (\frac{E}{E_0})^{-a - \frac{E}{E_0}}$ to fit the normalized spectrum, and gain the error of the fitting parameters as the statistical uncertainty.
+4. Use the function with the form of $N(E) = N_0 (\frac{E}{E_0})^{-a - \frac{E}{E_0}}$ to fit the normalized spectrum, and gain the error of the fitting parameters as the statistical uncertainty.
 5. Caculate the difference of the integral of the fitting function and the integral of the events number of the normalization fast neutron in high energy range as the systematic uncertainty.
 6. Get the mean and the error of the fast neutron background events in IBD candidates.
 
@@ -57,3 +57,12 @@ Keep the same criteria and procedure as the IBD analysis.
 1. Caculate the efficiency of the muon veto and multiplicity selection, and caculate the rate of the FastN background.
 2. Scan the DT cut from 600mm to 1400mm.
 3. Add a physical picture of the FastN and OWS-tag.
+
+
+
+# Appendix:
+
+1. The error of the integral of the fit function:
+$$
+\sigma\left(\int_a^b N(E) {\rm d} E\right) = \sqrt{\sum_{i=1}^3 \left( \int_a^b \frac{\partial N(E)}{\partial x_i} {\rm d} E \right)^2 \sigma^2(x_i)}
+$$
