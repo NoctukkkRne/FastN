@@ -59,13 +59,21 @@ int main(int argc, char **argv) {
   h1dAccSub->Rebin(BinWidth * 10);
   h1dSelect->Rebin(BinWidth * 10);
 
+  int k = h1dAccSub->FindBin(1.5);
+  double ct = h1dAccSub->GetBinCenter(k);
+  double wd = h1dAccSub->GetBinWidth(k);
+  double tm = wd / (ct + wd / 2.0 - 1.5);
+  h1dAccSub->SetBinContent(k, h1dAccSub->GetBinContent(k) * tm);
+  h1dSelect->SetBinContent(k, h1dSelect->GetBinContent(k) * tm);
+
   TH1D *h1dSelect_norm = new TH1D(*h1dSelect);
   h1dSelect_norm->Reset();
   h1dSelect_norm->SetName("h1dSelect_norm");
   h1dSelect_norm->Add(h1dSelect, A);
 
-  h1dAccSub->SetMarkerColor(kRed);
-  h1dAccSub->SetLineColor(kRed);
+  h1dAccSub->SetMarkerStyle(68);
+  h1dAccSub->SetMarkerColor(kBlack);
+  h1dAccSub->SetLineColor(kBlack);
   h1dSelect_norm->SetMarkerColor(kBlue);
   h1dSelect_norm->SetLineColor(kBlue);
 
@@ -76,7 +84,8 @@ int main(int argc, char **argv) {
   TF1 *func_expo_poly1 = new TF1("func_expo_poly1", expo_poly1, 1.5, 100.0, 3);
   func_expo_poly1->SetParNames("N0", "E0", "a");
   func_expo_poly1->SetParameters(50.0 * BinWidth, 100.0, 0.73);
-  func_expo_poly1->SetLineColor(kBrownCyan);
+  func_expo_poly1->SetMarkerColor(kRed);
+  func_expo_poly1->SetLineColor(kRed);
   TFitResultPtr fit_res =
       h1dAccSub->Fit("func_expo_poly1", "QS; N0", "", 12.0, 100.0);
   fit_res->Print();
@@ -102,18 +111,19 @@ int main(int argc, char **argv) {
                                  2);
   Integ_func_err = TMath::Sqrt(Integ_func_err);
 
-  lg->AddEntry(h1dSelect_norm, "Normalized fast neutron spectrum");
-  lg->AddEntry(h1dAccSub, "Extended IBD spectrum");
+  lg->AddEntry(h1dSelect_norm, "Fast Neutron Spectra (Only OWS tagged)");
+  lg->AddEntry(h1dAccSub, "IBD Candidates");
+  lg->AddEntry(func_expo_poly1, "Fit to IBD Candidates");
   lg->SetX1(0.30);
   lg->SetX2(0.80);
-  lg->SetY1(0.65);
+  lg->SetY1(0.55);
   lg->SetY2(0.85);
 
-  TH1D *h1dVoid = new TH1D("h1dVoid", "", 1000 / (BinWidth * 10), 0.0, 100.0);
+  TH1D *h1dVoid = new TH1D("h1dVoid", "", 985, 1.5, 100.0);
   h1dVoid->GetXaxis()->SetTitle("Prompt Energy [MeV]");
   h1dVoid->GetYaxis()->SetTitle(TString::Format("Events / %dMeV", BinWidth));
-  h1dVoid->GetXaxis()->SetRangeUser(0.0, 100.0);
-  h1dVoid->GetYaxis()->SetRangeUser(0.0, 1.05 * func_expo_poly1->Eval(1.5));
+  h1dVoid->GetXaxis()->SetRangeUser(1.5, 100.0);
+  h1dVoid->GetYaxis()->SetRangeUser(0.0, 1.15 * h1dSelect_norm->GetMaximum());
 
   h1dVoid->Draw();
   h1dSelect_norm->Draw("same");

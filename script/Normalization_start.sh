@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dataset=P17B
+dataset=Full
 syst_uncertainty=10
 
 make -j8
